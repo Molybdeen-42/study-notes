@@ -245,3 +245,53 @@ Images are useful
 Use earlier gleaned formatting to possibly determine e-mails.
 
 Then password spray using weak passwords against these e-mails.
+
+### Scanning with nmap
+
+Use netdiscover to find other ip's on network.
+- netdiscover -r xxx.xxx.xxx.0/24
+
+nmap:
+- nmap -sS (Stealth scanning [not actually stealthy])
+- SYN SYNACK RST
+- nmap -T4 -p- -A
+  - -T4: Speed between 1-5, 4 is a choice
+  - -p-: Scan all ports
+    - Removing scans top 1000 ports.
+    - -p 80,443,53: Scan specific port range
+  - -A: Everything, all data you can find
+- Host discovery
+  - -sn
+  - -pN
+- Scan techniques
+  - -sS
+  - -sU (UDP scan)
+- -sV: Spen ports for service info
+- -sC: Script scanning
+- -O: OS detection
+
+First finding open ports, then getting intel on them is generally a good idea for speed.
+
+### Enumeration HTTP/HTTPS
+
+Attacking SMB and HTTP/HTTPS is usually a good first step.
+
+Visit webpage if port 80 (HTTP) or port 443 (HTTPS) is exposed.
+
+nikto:
+- Web vulnerbility scanner
+- Can be frequently autoblocked by websites
+- nikto -h xxx.xxx.xxx.xxx
+  - -h: host
+
+dirbuster/dirb/gobuster for directory busting
+
+dirbuster:
+- Enter url: http://xxx.xxx.xxx.xxx:80/
+- Choose list: /usr/share/dirbuster/...
+- Enter file extension: php,txt,zip,pdf
+
+burpsuite:
+- Repeater to find response in realtime and modify your requests.
+
+View sourcecode
