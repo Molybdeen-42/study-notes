@@ -246,6 +246,8 @@ Use earlier gleaned formatting to possibly determine e-mails.
 
 Then password spray using weak passwords against these e-mails.
 
+## Information Gathering (Reconnaissance [Active])
+
 ### Scanning with nmap
 
 Use netdiscover to find other ip's on network.
