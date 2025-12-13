@@ -297,3 +297,27 @@ burpsuite:
 - Repeater to find response in realtime and modify your requests.
 
 View sourcecode
+
+### Enumeration SMB
+
+Metasploit
+- msfconsole
+  - smb_version detection
+- smbclient
+  - smbclient \\\\\\\\xxx.xxx.xxx.xxx\\\\
+
+### Enumeration SSH
+
+ssh
+- sssh xxx.xxx.xxx.xxx -oKexAlgorithms=+... oHostKeyAlgorithms=+... -c ...
+
+Possibly exposes a banner.
+
+### Vulnerability research
+
+Google!
+- Rapid7
+- Exploit Database
+
+If not
+- searchsploit ...
