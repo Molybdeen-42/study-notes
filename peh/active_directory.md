@@ -17,11 +17,16 @@ Try LLMNR Poisoning.
 - `sudo mousepad /etc/responder/Responder.conf` *(Make sure all options are on)*
 - `sudo responder -I eth0 -dPv` on vpn `sudo responder -I tun0 -dPv`
 
-Run `nmap` on the network to check if SMB-signing is disabled.
+Run `nmap` to find targets.
+- `nmap -sS -T4 [ip-address range]`
+
+Run `nmap` on the network to check if SMB-signing is enabled but not required.
 - `nmap --script=smb2-security-mode.nse -p445 xxx.xxx.xxx.0/24` *(Add -Pn for better probing)*
 
 Find out what the domain controller is.
-- Run `nmap` and scan devices for port 389 (LDAP).
+- Port 389 (LDAP) open.
+- Port 53 open.
+- Port 636 (LDAPSSL) open.
 - The domain controller has SMB-signing enabled by default.
 - `net use`?
 
