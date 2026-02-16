@@ -42,7 +42,7 @@ Combine words:
 Can force for both words to appear:
 - `uu AND "Linear Algebra"`
 
-Can also user `OR`:
+Can also use `OR`:
 - `uu OR "Linear Algebra"`
 
 Can use wildcard:
@@ -64,3 +64,108 @@ Look for something in title:
 
 ## Image OSINT
 
+We can reverse image search:
+- `lens.google.com` (Google images)
+  - Find image source
+  - Change the area on the image that is reverse image searched (Works well for buildings)
+- `tineye.com`
+- `pimeyes.com` (Paid)
+
+Viewing EXIF data:
+- Data on where a photo is taken can be found inside the image's metadata.
+- `jimpl.com`
+
+Physical Location OSINT:
+- Look the location up on `google maps`.
+- Use the satellite view.
+  - You can try to find other satellite images
+- Is there private access?
+- Is there a smoke area?
+- Look for the location of doors
+
+Identifying Geographical Locations
+- Street signs
+- Cars
+- Weather
+- Buildings
+- etc.
+- *Play GeoGuessr to practice!*
+  - https://somerandomstuff1.wordpress.com/2019/02/08/geoguessr-the-top-tips-tricks-and-techniques/
+
+## E-mail OSINT
+
+Common tools:
+- `hunter.io`
+  - Type in a company name
+  - Can analyze e-mail address patterns
+- `Phonebook.cz`
+  - Look up domain
+  - Can find Domains, E-mail addresses and URLs
+- `voilanorbert.com`
+- `clearbit` extension (Only in chrome)
+
+Verify e-mail addresses:
+- `tools.verifyemailaddress.io` (emailhippo)
+- `email-checker.net/validate`
+- Try to log in to the account and click forgot password.
+
+## Password OSINT
+
+Look at repeat offenders!
+
+Try to tie accounts to each other.
+
+Websites:
+- `dehashed.com` (Paid)
+- `hashes.org`
+  - Search for found hashes
+- `weleakinfo.to` (Paid)
+- `leakcheck.io` (Paid)
+- `snusbase.com` (Paid)
+- `haveibeenpwned.com`
+- `scylla.sh`
+  - `email:test@test.com`
+  - `domain:test.com`
+  - `password:12345`
+
+## Username OSINT
+
+Websites:
+- `namechk.com`
+  - Finds usernames that are available
+- `whatsmyname.app`
+  - Find accounts with a username
+- `namecheckup.com`
+- Go to social media to enumerate usernames
+  - `socialmedia.com/[username]`
+- Slowly type in usernames in social media applications
+
+## Searching for people
+
+Websites:
+- `whitepages.com`
+- `truepeoplesearch.com`
+- `fastpeoplesearch.com`
+- `fastbackgroundcheck.com`
+- `webmii.com`
+- `peekyou.com`
+- `411.com`
+- `spokeo.com`
+- `thatsthem.com`
+- *Use Google!*
+
+Use voter records.
+- `voterrecords.com`
+
+Hunting phone numbers
+- `truecaller.com` (Have to log in)
+- `calleridtest.com`
+- `infobel.com`
+
+Discovering birthdates
+- Include **birthday** or **happy birthday** in searches
+
+Searching for resumes
+- `site:linkedin.com`
+
+## Social Media OSINT
