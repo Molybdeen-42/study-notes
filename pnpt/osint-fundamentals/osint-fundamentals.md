@@ -169,3 +169,128 @@ Searching for resumes
 - `site:linkedin.com`
 
 ## Social Media OSINT
+
+### Twitter/X OSINT
+
+https://github.com/rmdir-rp/OSINT-twitter-tools
+
+Search:
+- `from:[user]`
+- `to:[user]`
+- `@[user]`
+- `since:[yyyy-mm-dd]`
+- `until:[yyyy-mm-dd]`
+- `geocode:[x,y,{range}]`
+  - Get coordinates from Google maps
+- *Combine these!*
+
+### Facebook OSINT
+
+Websites:
+- https://sowsearch.info
+- https://intelx.io/tools?tab=facebook
+
+Get an ID for an account:
+- Right click -> View page source -> `userID`
+
+### Instagram OSINT
+
+Look at who people are following
+
+Look for names
+
+Look for tags
+
+Research images
+
+Get profile ID:
+- Right click -> View page source -> `profilePage_` or `profile_id`
+
+Use https://imginn.com/ to download images from a profile
+
+### Snapchat OSINT
+
+Search usernames and try slow typing
+
+Go to https://map.snapchat.com
+
+### Reddit OSINT
+
+Can use quotes for specific sentences.
+
+Search google with `site:reddit.com`
+
+Look at comments and posts
+
+### LinkedIn OSINT
+
+Check for contact info
+
+Works best if you have many connections
+
+### TikTok OSINT
+
+Look at videos and do image OSINT
+
+Do image OSINT on profile pictures
+
+## Website OSINT
+
+**Do not underestimate Google!**
+
+Websites:
+- `builtwith.com`
+  - Tells you what technology the website is built with
+- `centralops.net`
+  - Do a `whois`
+  - Can get you an IP-address
+  - Can disclose names, addresses, phone numbers, etc.
+  - Also checks the services
+  - Discloses some subdomains and headers
+- `dnslytics.com`
+  - Reverse lookup IP-addresses
+  - Can find all websites hosted from this IP-address
+- `spyonweb.com`
+  - Reverse lookup
+  - Allows for URLs
+  - Has analytics
+  - Has lookup for `UA-`
+- `virustotal.com`
+  - File search
+  - URL search
+  - Get the `UA-`
+  - Gives headers
+- Look at reddit: `reddit.com/domain/[URL]/`
+- `visualping.io`
+  - Pings you for website changes
+- `backlinkwatch.com`
+  - Looks at places where the website is posted
+- `viewdns.info`
+- `urlscan.io`
+- `dnsdumpster.com` 
+  - Does some domain mapping!
+- `web-check.as93.net`
+
+Finding subdomains:
+- `crt.sh`
+  - Wildcard: %
+  - Example: `%.test.com`
+- Google
+  - Wildcard: *
+  - Example: `*.test.com`
+  - Use `-[subdomain]` to remove unwanted subdomains
+
+Additional great resources:
+- `shodan.io`
+  - Search an IP-address
+  - Find vulnerable services
+  - Searching
+    - `city:[city]`
+    - `port:3389`
+    - `org:[organisation]`
+  - Also gives images
+- `archive.org`
+  - Gives snapshots of a website at different times.
+- Google
+  - Can look at cached version of website (Little arrow behind URL)
+  
