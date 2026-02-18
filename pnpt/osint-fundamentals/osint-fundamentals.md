@@ -294,3 +294,48 @@ Additional great resources:
 - Google
   - Can look at cached version of website (Little arrow behind URL)
   
+## Business OSINT
+
+Start on LinkedIn
+
+Websites:
+- `opencorporates.com`
+  - Addresses
+  - Who are high ranking employees
+  - Annual report
+  - More articles
+- `sosnc.com`
+- `aihitdata.com`
+- `indeed.com`
+  - Can find software in job postings
+
+## Wireless OSINT
+
+https://wigle.net/
+
+## OSINT Tools
+
+### Image & Location OSINT
+
+Use `exiftool`
+- `exiftool [file]`
+
+### Hunting E-mails and Breached Data
+
+https://github.com/hmaverickadams/DeHashed-API-Tool (Requires paid access to DeHashed)
+
+### Username & Account OSINT
+
+Use `sherlock`
+- `sherlock [username]`
+
+### Phone Number OSINT
+
+Use `phoneinfoga` from github
+- `phoneinfoga scan -n [phone number]`
+- `phoneinfoga serve -p [port]`
+  - Serves a website on localhost to look up phone numbers
+
+### Social Media OSINT
+
+`InstagramOSINT` on GitHub
