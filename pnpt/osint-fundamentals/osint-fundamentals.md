@@ -339,3 +339,48 @@ Use `phoneinfoga` from github
 ### Social Media OSINT
 
 `InstagramOSINT` on GitHub
+
+### Exploring OSINT Frameworks
+
+Frameworks
+- `recon-ng`
+  - `marketplace search`
+  - `marketplace install hackertarget`
+    - `modules load hackertarget`
+    - `options set SOURCE [domain]`
+    - `run`
+    - `show hosts`
+  - `marketplace install profiler`
+    - `modules load profiler`
+    - `options set SOURCE [username]`
+    - `run`
+    - `show profiles`
+- `maltego`
+- `Spiderfoot`
+- `sn0int`
+
+### Hunchly
+
+website: https://hunch.ly
+
+A web-capture tool for investigations. 
+
+### Website OSINT tools
+
+Tools:
+- `whois [url]`
+- `subfinder` https://github.com/projectdiscovery/subfinder
+  - `sudo apt install subfinder`
+  - `subfinder -d [url]`
+- `assetfinder` https://github.com/tomnomnom/assetfinder
+  - `assetfinder [url]`
+  - Look for `adm`, `vpn`, `dev`, `api`, etc...
+- `amass` https://github.com/OWASP/Amass
+  - `amass enum -d [url]`
+- `httprobe` https://github.com/tomnomnom/httprobe
+  - `cat [url].txt | httprobe -s -p https:443`
+- `gowitness` https://github.com/sensepost/gowitness/wiki/Installation
+  - `gowitness file -f [file].txt -P [image folder] --no-http`
+
+## Writing an OSINT report
+
