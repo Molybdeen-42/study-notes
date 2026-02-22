@@ -381,3 +381,6 @@ Tools:
   - `cat [url].txt | httprobe -s -p https:443`
 - `gowitness` https://github.com/sensepost/gowitness/wiki/Installation
   - `gowitness file -f [file].txt -P [image folder] --no-http`
+
+## Writing an OSINT report
+

