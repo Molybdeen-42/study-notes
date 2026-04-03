@@ -205,6 +205,12 @@ Shell
 
 Meterpreter
 - `getprivs`
+- `load incognito`
+- `list_tokens -u`
+- `impersonate_token "[token]"`
+- Migrate to a process run by the impersonated token
+  - `ps` (Shows all processes)
+  - `migrate [PID]`
 
 Key common privileges
 - SeAssignPrimaryToken/SeImpersonate
